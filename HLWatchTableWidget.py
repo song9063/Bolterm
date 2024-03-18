@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License 
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 #
-from PySide6.QtCore import Signal, Slot, QSettings
+from PySide6.QtCore import Signal, Slot, QSettings, QModelIndex
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QTableView, QHeaderView
 from HLWatchTableModel import HLWatchTableModel
 
@@ -28,6 +28,7 @@ class HLWatchTableWidget(QWidget):
 
 
         self.model = HLWatchTableModel()
+        self.model.dataChanged.connect(self.onModelDataChanged)
 
         self.initUI()
 
@@ -66,3 +67,7 @@ class HLWatchTableWidget(QWidget):
     
     def updateWatchValues(self, valueDict):
         self.model.updateWatchValues(valueDict)
+
+    @Slot(QModelIndex, QModelIndex)
+    def onModelDataChanged(self):
+        self.tableView.resizeColumnsToContents()

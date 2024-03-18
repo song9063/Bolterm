@@ -20,40 +20,42 @@ from PySide6.QtGui import QColor
 from datetime import datetime
 
 class HLWatchItem:
-    def __init__(self, key="", val="", updatedAt=""):
-        self.key = key.strip()
-        self.val = val.strip()
+    def __init__(self, key="", val="", updatedAt="", name="", comment=""):
+        self._key = key.strip()
+        self._val = val.strip()
+        self._prevValue = ""
         self.updatedAt = ""
-
-        self.prevValue = ""
+        self.name = ""
+        self.comment = ""
 
     def set(self, key, val):
-        self.key = key.strip()
-        self.val = val.strip()
+        self._key = key.strip()
+        self._val = val.strip()
 
     def setKey(self, key):
-        self.key = key.strip()
+        self._key = key.strip()
 
     def setValue(self, val):
-        if self.prevValue != self.val:
-            self.prevValue = self.val
-        self.val = val.strip()
-        self.updatedAt = datetime.now().strftime("%Y%m%d %H%M%S.%f")
+        strNewVal = val.strip()
+        if self._val != strNewVal:
+            self._prevValue = self._val
+        self._val = strNewVal
+        self.updatedAt = datetime.now().strftime("%H%M%S.%f")
 
     def getKey(self):
-        return self.key
+        return self._key
     
     def getValue(self):
-        return self.val
+        return self._val
     
     def getPrevValue(self):
-        return self.prevValue
+        return self._prevValue
     
     def getUpdatedAt(self):
         return self.updatedAt
     
     def isEmpty(self):
-        return self.key == "" and self.val == ""
+        return self._key == "" and self._val == ""
     
 
 class HLWatchTableModel(QAbstractTableModel):
@@ -73,13 +75,13 @@ class HLWatchTableModel(QAbstractTableModel):
             return None
         if orientation == Qt.Orientation.Vertical:
             return [section]
-        return ("Prefix", "Value", "Updated At")[section]
+        return ("Name", "Prefix", "Value", "Updated At", "Comment")[section]
     
     def rowCount(self, parent: QModelIndex) -> int:
         return len(self.watchKeys) + 1
     
     def columnCount(self, parent: QModelIndex) -> int:
-        return 3
+        return 5
     
     def setData(self, index: QModelIndex, value: Any, role: int = ...) -> bool:
         col = index.column()
@@ -98,11 +100,17 @@ class HLWatchTableModel(QAbstractTableModel):
                 value = strKey
                 return True
             
-            if col == 0:
+            if col == 1: # prefix
                 self.watchItems.pop(strKey)
                 self.watchKeys[row] = value
                 watchItem.setKey(value)
-                self.watchItems[value] = watchItem
+            elif col == 0: # Name
+                watchItem.name = value
+            elif col == 4: # Comment
+                watchItem.comment = value
+
+            self.watchItems[value] = watchItem
+            self.dataChanged.emit(index, index)
             return True
 
         return False
@@ -119,20 +127,24 @@ class HLWatchTableModel(QAbstractTableModel):
             if watchItem is None:
                 return "None"
             
-            if col == 0:
+            if col == 0: # Name
+                return watchItem.name
+            elif col == 1: # Prefix
                 return watchItem.getKey()
-            elif col == 1:
+            elif col == 2:
                 strDispVal = ""
                 strOldVal = watchItem.getPrevValue()
                 strCurVal = watchItem.getValue()
                 if strOldVal != "":
-                    strDispVal = f'{strOldVal} -> {strCurVal}'
+                    strDispVal = f'{strOldVal}->{strCurVal}'
                 else:
                     strDispVal = strCurVal
 
                 return strDispVal
-            elif col == 2:
+            elif col == 3:
                 return watchItem.getUpdatedAt()
+            elif col == 4: # Comment
+                return watchItem.comment
 
             return ""
         elif role == Qt.ItemDataRole.BackgroundRole:
@@ -142,7 +154,8 @@ class HLWatchTableModel(QAbstractTableModel):
         return None
     
     def flags(self, index: QModelIndex) -> Qt.ItemFlag:
-        if index.column() == 0:
+        col = index.column()
+        if col == 0 or col == 1 or col == 4:
             return Qt.ItemFlag.ItemIsEditable|Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
         return Qt.ItemFlag.ItemIsEnabled|Qt.ItemFlag.ItemIsSelectable
 
