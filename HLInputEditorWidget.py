@@ -1,6 +1,6 @@
 # 
 # This file is part of the Bolterm distribution (https://github.com/song9063/Bolterm).
-# Copyright (c) 2015 Liviu Ionescu.
+# Copyright (c) 2024 Song Junwoo.
 # 
 # This program is free software: you can redistribute it and/or modify  
 # it under the terms of the GNU General Public License as published by  
