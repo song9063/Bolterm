@@ -12,11 +12,31 @@ Serial terminal
 
 
 
+### Features
+
+#### Command Editor
+
+- Send a command by each line
+
+- Singleline commenting
 
 
 
+#### Watch
+
+- Detecting response changes
 
 
+
+#### Todo
+
+- Hex editor
+
+- Watch templates for popular device(ex: PLC, BLE module, etc)
+
+- Watch logs
+
+- Workspace(connection setting, commands, watches)
 
 
 
