@@ -14,7 +14,7 @@ Serial terminal
 
 ### Features
 
-#### Command Editor
+#### 1. Command Editor
 
 - Send a command by each line
 
@@ -22,13 +22,13 @@ Serial terminal
 
 
 
-#### Watch
+#### 2. Watch
 
 - Detecting response changes
 
 
 
-#### Todo
+### Todo
 
 - Hex editor
 
