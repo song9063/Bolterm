@@ -40,10 +40,13 @@ class HLTermViewWidget(QWidget):
         self.chkAutoScroll.stateChanged.connect(self.onChkAutoScrollStateChanged)
         layTools.addWidget(self.chkAutoScroll)
 
-        btSaveOutput = QPushButton(self.tr("Save output"))
+        btSaveOutput = QPushButton(self.tr("Save output"), self)
         layTools.addWidget(btSaveOutput)
 
         layTools.addStretch()
+        btClear = QPushButton(self.tr("Clear"), self)
+        btClear.clicked.connect(self.onClearClicked)
+        layTools.addWidget(btClear)
 
         self.termView = HLTermEditorWidget(self)
         self.termView.setMinimumHeight(100)
@@ -63,5 +66,18 @@ class HLTermViewWidget(QWidget):
         self.settings.setValue("AutoScroll", self.chkAutoScroll.isChecked())
         self.termView.setAutoScroll(self.chkAutoScroll.isChecked())
 
+    def onClearClicked(self):
+        self.termView.clear()
+
     def addText(self, strText):
         self.termView.addText(strText)
+
+        print(self.termView.viewportMargins())
+        print(self.termView.viewportSizeHint())
+        # pol = self.termView.sizeAdjustPolicy()
+        # print(pol)
+    
+        
+
+        # print(self.termView.toPlainText())
+        # print('End of text')

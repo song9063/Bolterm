@@ -18,7 +18,7 @@
 
 from PySide6.QtCore import (QEvent, QObject, QEvent, Qt, Signal)
 from PySide6.QtGui import (QTextCharFormat, QColor, QFont, QPalette, QTextCursor, QKeyEvent)
-from PySide6.QtWidgets import (QPlainTextEdit, QVBoxLayout)
+from PySide6.QtWidgets import (QPlainTextEdit, QVBoxLayout, QAbstractScrollArea)
 from HLATHighlighter import HLATHighlighter
 
 class HLTermEditorWidget(QPlainTextEdit):
@@ -125,27 +125,33 @@ ATI9
         self.installEventFilter(self)
         self.setStyleSheet("QPlainTextEdit {background-color: #262626; color: white;}")
         self.highlighter.setDocument(self.document())
+        self.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
 
     def setAutoScroll(self, bSet):
         self.bAutoScrollToEnd = bSet
         if bSet:
-            self.moveCursor(QTextCursor.End)
+            # self.moveCursor(QTextCursor.End)
             self.ensureCursorVisible()
         else:
             self.setCenterOnScroll(True)
 
     def addText(self, strText):
         # self.moveCursor(QTextCursor.End)
-        self.insertPlainText(strText)
+        # self.insertPlainText(strText)
+        self.appendPlainText(strText)
+        # oldTxt = self.toPlainText()
+        # self.plainText = oldTxt + strText
         if self.bAutoScrollToEnd:
-            self.moveCursor(QTextCursor.End)
+            self.ensureCursorVisible()
+            # self.moveCursor(QTextCursor.End)
 
     def runCurrentLine(self):
         cursor = self.textCursor()
-        # print(f'Block {cursor.blockNumber()}')
+        print(f'Block {cursor.blockNumber()}')
         doc = self.document()
         textBlock = doc.findBlockByLineNumber(cursor.blockNumber())
         strCmd = textBlock.text()
+        print(f'runCurrentLine: {strCmd}')
         if not strCmd.startswith('#') and len(strCmd.replace(" ", "")) > 0:
             print(strCmd.strip())
             self.writeCommand.emit(strCmd.strip())

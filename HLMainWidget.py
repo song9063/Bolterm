@@ -190,11 +190,11 @@ class HLMainWidget(QWidget):
 
     def readSerialData(self):
         data = self.device.readAll()
-        strData = data.data().decode('utf8')
+        strData = data.data().decode('utf8').strip()
         
         self.termView.addText(strData)
         self.parseDataForWatch(strData)
-        print(strData)
+        # print(strData)
 
     def parseDataForWatch(self, strNewData):
         watchKeys = self.watchWidget.getWatchKeys()
@@ -253,3 +253,4 @@ class HLMainWidget(QWidget):
 
     def writeTimeout(self):
         print("timeout!!")
+        self.writeTimer.stop()
